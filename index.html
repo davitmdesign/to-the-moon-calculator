@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krypto-Vergleichsrechner – CoinGecko Edition (Responsive)</title>
+  <title>Krypto-Vergleichsrechner – CoinGecko Edition (mit Rechenweg)</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -146,6 +146,17 @@
       font-weight: 700;
     }
 
+    .calc-box {
+      background: #0f1533;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-top: 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 16px;
@@ -197,6 +208,7 @@
         <div class="box"><div class="hdr">Market Cap (Vergleich)</div><div id="kpiMc" class="val">—</div></div>
         <div class="box"><div class="hdr">Max Supply (Ziel)</div><div id="kpiMs" class="val">—</div></div>
       </div>
+      <div id="calcPath" class="calc-box">—</div>
       <p style="color: var(--muted); margin-top: 10px;">Nur rechnerische Abschätzung – kein Finanzrat.</p>
     </div>
   </div>
@@ -228,6 +240,13 @@
       return new Intl.NumberFormat('de-DE').format(n);
     }
 
+    function updateCalcPath(mc, ms, price, base, target) {
+      const baseName = base ? base.toUpperCase() : '';
+      const targetName = target ? target.toUpperCase() : '';
+      const text = `${formatUSD(mc)}${baseName ? ` (${baseName})` : ''} ÷ ${formatNum(ms)}${targetName ? ` (${targetName})` : ''} = ${formatUSD(price)}${targetName ? ` pro ${targetName}` : ''}`;
+      $('#calcPath').textContent = text;
+    }
+
     function calculateManual() {
       const mc = parseHumanNumber($('#mc').value);
       const ms = parseHumanNumber($('#ms').value);
@@ -239,6 +258,7 @@
       $('#kpiMc').textContent = formatUSD(mc);
       $('#kpiMs').textContent = formatNum(ms);
       $('#price').textContent = `${formatUSD(price)} pro Coin`;
+      updateCalcPath(mc, ms, price);
     }
 
     $('#calcManual').addEventListener('click', calculateManual);
@@ -248,6 +268,7 @@
       $('#price').textContent = '—';
       $('#kpiMc').textContent = '—';
       $('#kpiMs').textContent = '—';
+      $('#calcPath').textContent = '—';
     });
 
     async function fetchCoinById(id) {
@@ -274,11 +295,13 @@
         const maxSupply = targetData.max_supply;
         if (!marketCap || !maxSupply) throw new Error('Fehlende Daten');
         const price = marketCap / maxSupply;
-        $('#kpiMc').textContent = formatUSD(marketCap);
-        $('#kpiMs').textContent = formatNum(maxSupply);
-        $('#price').textContent = `${formatUSD(price)} pro ${target}`;
+        $('#kpiMc').textContent = `${formatUSD(marketCap)} (${base.toUpperCase()})`;
+        $('#kpiMs').textContent = `${formatNum(maxSupply)} (${target.toUpperCase()})`;
+        $('#price').textContent = `${formatUSD(price)} pro ${target.toUpperCase()}`;
+        updateCalcPath(marketCap, maxSupply, price, base, target);
       } catch (err) {
         $('#price').textContent = `Fehler: ${err.message}`;
+        $('#calcPath').textContent = '—';
         console.error(err);
       }
     }
@@ -290,6 +313,7 @@
       $('#price').textContent = '—';
       $('#kpiMc').textContent = '—';
       $('#kpiMs').textContent = '—';
+      $('#calcPath').textContent = '—';
     });
   </script>
 </body>
