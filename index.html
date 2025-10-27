@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krypto-Vergleichsrechner – CoinGecko Edition</title>
+  <title>Krypto-Vergleichsrechner (CoinGecko API)</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -13,9 +13,7 @@
       --accent: #7aa2ff;
       --danger: #ff8a8a;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       padding: 24px;
@@ -24,15 +22,13 @@
       color: var(--text);
       transition: background 0.3s ease, color 0.3s ease;
     }
-
-    .wrapper { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    .wrapper { max-width: 1100px; margin: 0 auto; padding: 0 16px; transition: opacity .25s ease; }
     h1 { font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
     .sub { color: var(--muted); margin-bottom: 24px; }
 
-    .theme-toggle {
+    .theme-toggle, .lang-toggle {
       position: fixed;
       top: 16px;
-      right: 16px;
       background: #0f1533;
       color: var(--text);
       border: 1px solid rgba(255,255,255,0.1);
@@ -41,7 +37,9 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .theme-toggle:hover { background: #1c2550; }
+    .theme-toggle:hover, .lang-toggle:hover { background: #1c2550; }
+    .theme-toggle { right: 16px; }
+    .lang-toggle { right: 64px; }
 
     .info-box {
       background: #0f1533;
@@ -65,7 +63,6 @@
       padding: 20px;
       backdrop-filter: blur(6px);
       box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; }
@@ -79,9 +76,9 @@
       padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
       background: linear-gradient(180deg, rgba(122,162,255,0.16), rgba(122,162,255,0.06));
       color: var(--text); cursor: pointer; font-weight: 600;
-      transition: all 0.2s ease-in-out;
+      transition: background .2s ease;
     }
-    .btn:hover { transform: translateY(-2px); background: linear-gradient(180deg, rgba(122,162,255,0.3), rgba(122,162,255,0.1)); }
+    .btn:hover { background: linear-gradient(180deg, rgba(122,162,255,0.3), rgba(122,162,255,0.1)); }
     .btn.danger { background: linear-gradient(180deg, rgba(255,138,138,0.16), rgba(255,138,138,0.06)); }
 
     .row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 14px; }
@@ -94,53 +91,35 @@
       border-radius: 12px; padding: 10px 16px; text-align: center; flex: 1; min-width: 120px;
     }
 
-    .kpi .hdr { font-size: 12px; color: var(--muted); }
-    .kpi .val { font-size: 16px; font-weight: 700; }
-    .calc-box, .analysis-box, .fairvalue-box, .coininfo-box { color: var(--muted); font-size: 14px; margin-top: 16px; }
-
-    .coininfo-box img { width: 48px; height: 48px; border-radius: 50%; margin-bottom: 6px; }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px; }
-    th { color: var(--accent); text-align: left; }
+    .hdr { font-size: 12px; color: var(--muted); }
+    .val { font-size: 16px; font-weight: 700; }
 
     @media (max-width: 600px) {
       body { padding: 16px; }
       .wrapper { padding: 0 12px; }
       .card { padding: 16px; }
     }
-    .lang-toggle {
-      position: fixed;
-      top: 16px;
-      right: 64px; /* etwas Platz neben dem Theme-Button */
-      background: #0f1533;
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .lang-toggle:hover { background: #1c2550; }
   </style>
 </head>
 <body>
   <button class="lang-toggle" id="langToggle">🇩🇪</button>
   <button class="theme-toggle" id="themeToggle">🌙</button>
-  <div class="wrapper">
-    <h1>Krypto-Vergleichsrechner (CoinGecko API)</h1>
-    <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>.</div>
+  <div class="wrapper" id="content">
+    <h1 id="title">Krypto-Vergleichsrechner (CoinGecko API)</h1>
+    <div class="sub" id="subtitle">
+      Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>.
+    </div>
 
-    <div class="info-box">
+    <div class="info-box" id="infoText">
       💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.
     </div>
 
     <div class="grid">
-      <div class="card">
-        <h2>Option 1: Manuelle Eingabe</h2>
-        <label>Market Cap des Vergleichs-Coins (USD)</label>
+      <div class="card" id="manualCard">
+        <h2>Manuelle Eingabe</h2>
+        <label for="mc">Market Cap des Vergleichs-Coins (USD)</label>
         <input id="mc" type="text" placeholder="z. B. 510B" />
-        <label style="margin-top:14px">Max Supply des Ziel-Coins (Einheiten)</label>
+        <label for="ms" style="margin-top:14px">Max Supply des Ziel-Coins (Einheiten)</label>
         <input id="ms" type="text" placeholder="z. B. 612567980" />
         <div class="row">
           <button class="btn danger" id="clearManual">Reset</button>
@@ -148,11 +127,11 @@
         </div>
       </div>
 
-      <div class="card">
-        <h2>Option 2: Automatische Abfrage</h2>
-        <label>Vergleichs-Coin (z.B. ethereum)</label>
+      <div class="card" id="autoCard">
+        <h2>Automatische Abfrage</h2>
+        <label for="base">Vergleichs-Coin (z. B. ethereum)</label>
         <input id="base" type="text" placeholder="ethereum" />
-        <label style="margin-top:14px">Ziel-Coin (z.B. solana)</label>
+        <label for="target" style="margin-top:14px">Ziel-Coin (z. B. solana)</label>
         <input id="target" type="text" placeholder="solana" />
         <div class="row">
           <button class="btn danger" id="clearAuto">Reset</button>
@@ -163,17 +142,16 @@
 
     <div class="card" style="margin-top:24px; text-align:center;">
       <div id="coinInfo" class="coininfo-box">—</div>
-      <h2>Ergebnis</h2>
+      <h2 id="resultHeading">Ergebnis</h2>
       <div id="price" class="out">—</div>
-      <br>
       <div class="kpi">
-        <div class="box"><div class="hdr">Market Cap (Vergleich)</div><div id="kpiMc" class="val">—</div></div>
-        <div class="box"><div class="hdr">Max Supply (Ziel)</div><div id="kpiMs" class="val">—</div></div>
+        <div class="box"><div class="hdr" id="hdrMc">Market Cap (Vergleich)</div><div id="kpiMc" class="val">—</div></div>
+        <div class="box"><div class="hdr" id="hdrMs">Max Supply (Ziel)</div><div id="kpiMs" class="val">—</div></div>
       </div>
       <div id="calcPath" class="calc-box">—</div>
       <div id="analysis" class="analysis-box">—</div>
       <div id="fairvalue" class="fairvalue-box">—</div>
-      <p style="color: var(--muted); margin-top: 10px;">Nur rechnerische Abschätzung – keine Finanzberatung.</p>
+      <p id="footerText" style="color: var(--muted); margin-top: 10px;">Nur rechnerische Abschätzung – keine Finanzberatung.</p>
     </div>
   </div>
 
@@ -189,147 +167,30 @@
       $('#themeToggle').textContent = light ? '🌚' : '🌙';
     });
 
-    function parseHumanNumber(str) {
-      if (!str) return NaN;
-      const s = String(str).trim().replace(/\\s+/g, '');
-      const match = s.match(/^([0-9]*\\.?[0-9]+)([kKmMbBtT])?$/);
-      if (match) {
-        let num = parseFloat(match[1]);
-        const map = { K: 1e3, M: 1e6, B: 1e9, T: 1e12 };
-        const suf = match[2] ? match[2].toUpperCase() : null;
-        if (suf && map[suf]) num *= map[suf];
-        return num;
-      }
-      return parseFloat(s.replace(/[^0-9.]/g, ''));
-    }
-
-    function formatUSD(n) {
-      if (!isFinite(n)) return '—';
-      return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n);
-    }
-
-    function formatNum(n) {
-      if (!isFinite(n)) return '—';
-      return new Intl.NumberFormat('de-DE').format(n);
-    }
-
-    function updateCalcPath(mc, ms, price, base, target) {
-      const baseName = base ? base.toUpperCase() : '';
-      const targetName = target ? target.toUpperCase() : '';
-      $('#calcPath').textContent = `${formatUSD(mc)}${baseName ? ` (${baseName})` : ''} ÷ ${formatNum(ms)}${targetName ? ` (${targetName})` : ''} = ${formatUSD(price)}${targetName ? ` pro ${targetName}` : ''}`;
-    }
-
-    function showFairValue(price, target) {
-      const t = target ? target.toUpperCase() : '';
-      const rows = [
-        { label: 'Konservativ (0.25×)', mult: 0.25 },
-        { label: 'Realistisch (1×)', mult: 1 },
-        { label: 'Optimistisch (3×)', mult: 3 }
-      ];
-      $('#fairvalue').innerHTML = `<strong>Fair-Value-Szenarien ${t ? '(' + t + ')' : ''}</strong><table>` +
-        rows.map(r => `<tr><td>${r.label}</td><td>${formatUSD(price * r.mult)}</td></tr>`).join('') + '</table>';
-    }
-
-    function showAnalysis(price, currentPrice, target) {
-      if (!isFinite(currentPrice) || currentPrice <= 0) { $('#analysis').textContent = '—'; return; }
-      const diff = ((price - currentPrice) / currentPrice) * 100;
-      const t = target ? target.toUpperCase() : '';
-      const emoji = diff > 0 ? '🚀' : '📉';
-      $('#analysis').innerHTML = `<strong>Analyse:</strong><br>Aktueller Preis: ${formatUSD(currentPrice)} ${t}<br>` +
-        `Theoretischer Zielpreis: ${formatUSD(price)} ${t}<br>` +
-        `${emoji} Veränderung: ${diff.toFixed(2)} %`;
-    }
-
-    function showCoinInfo(data, name) {
-      const img = data.image?.small || '';
-      const rank = data.market_cap_rank ? `#${data.market_cap_rank}` : '—';
-      const price = data.market_data.current_price.usd;
-      const mc = data.market_data.market_cap.usd;
-      $('#coinInfo').innerHTML = `
-        <img src="${img}" alt="${name}" />
-        <div><strong>${name.toUpperCase()}</strong> (${rank})</div>
-        <div>Aktueller Preis: ${formatUSD(price)}</div>
-        <div>Market Cap: ${formatUSD(mc)}</div>
-      `;
-    }
-
-    async function fetchCoinById(id) {
-      const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}`);
-      if (!res.ok) throw new Error('Fehler bei CoinGecko');
-      return await res.json();
-    }
-
-    async function calculateAuto() {
-      const base = $('#base').value.trim().toLowerCase();
-      const target = $('#target').value.trim().toLowerCase();
-      if (!base || !target) {
-        $('#price').textContent = 'Bitte beide Coinnamen eingeben.';
-        return;
-      }
-      $('#price').textContent = 'Lade Daten...';
-      try {
-        const [baseData, targetData] = await Promise.all([fetchCoinById(base), fetchCoinById(target)]);
-        const marketCap = baseData.market_data.market_cap.usd;
-        const maxSupply = targetData.market_data.max_supply || targetData.market_data.circulating_supply;
-        const currentPrice = targetData.market_data.current_price.usd;
-        if (!marketCap || !maxSupply) throw new Error('Fehlende Daten');
-        const price = marketCap / maxSupply;
-        $('#kpiMc').textContent = `${formatUSD(marketCap)} (${base.toUpperCase()})`;
-        $('#kpiMs').textContent = `${formatNum(maxSupply)} (${target.toUpperCase()})`;
-        $('#price').textContent = `${formatUSD(price)} pro ${target.toUpperCase()}`;
-        updateCalcPath(marketCap, maxSupply, price, base, target);
-        showFairValue(price, target);
-        showAnalysis(price, currentPrice, target);
-        showCoinInfo(targetData, target);
-      } catch (err) {
-        $('#price').textContent = `Fehler: ${err.message}`;
-        ['#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
-        console.error(err);
-      }
-    }
-
-    function calculateManual() {
-      const mc = parseHumanNumber($('#mc').value);
-      const ms = parseHumanNumber($('#ms').value);
-      if (!isFinite(mc) || !isFinite(ms) || mc <= 0 || ms <= 0) {
-        $('#price').textContent = 'Bitte gültige Werte eingeben.';
-        return;
-      }
-      const price = mc / ms;
-      $('#kpiMc').textContent = formatUSD(mc);
-      $('#kpiMs').textContent = formatNum(ms);
-      $('#price').textContent = `${formatUSD(price)} pro Coin`;
-      updateCalcPath(mc, ms, price);
-      showFairValue(price);
-      $('#analysis').textContent = '—';
-      $('#coinInfo').textContent = '—';
-    }
-
-    $('#calcManual').addEventListener('click', calculateManual);
-    $('#calcAuto').addEventListener('click', calculateAuto);
-    $('#clearManual').addEventListener('click', () => {
-      ['#mc', '#ms', '#base', '#target'].forEach(id => $(id).value = '');
-      ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
-    });
-    $('#clearAuto').addEventListener('click', () => {
-      ['#base', '#target'].forEach(id => $(id).value = '');
-      ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
-    });
+    // Translations
     const translations = {
       de: {
+        title: "Krypto-Vergleichsrechner (CoinGecko API)",
+        subtitle: "Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von CoinGecko.",
+        info: "💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.",
         manual: "Manuelle Eingabe",
         auto: "Automatische Abfrage",
         marketCap: "Market Cap des Vergleichs-Coins (USD)",
         maxSupply: "Max Supply des Ziel-Coins (Einheiten)",
-        baseCoin: "Vergleichs-Coin (z.B. ethereum)",
-        targetCoin: "Ziel-Coin (z.B. solana)",
+        baseCoin: "Vergleichs-Coin (z. B. ethereum)",
+        targetCoin: "Ziel-Coin (z. B. solana)",
         calcManual: "Berechnen",
         calcAuto: "Abrufen & Berechnen",
         reset: "Reset",
         result: "Ergebnis",
-        note: "Nur rechnerische Abschätzung – kein Finanzrat.",
+        hdrMc: "Market Cap (Vergleich)",
+        hdrMs: "Max Supply (Ziel)",
+        footer: "Nur rechnerische Abschätzung – keine Finanzberatung."
       },
       en: {
+        title: "Crypto Comparison Calculator (CoinGecko API)",
+        subtitle: "Calculate the theoretical price of a coin – manually or automatically using data from CoinGecko.",
+        info: "💡 <strong>Note:</strong> Choose a comparison coin with similar functionality and a solid market position for realistic results.",
         manual: "Manual Input",
         auto: "Automatic Query",
         marketCap: "Market Cap of Base Coin (USD)",
@@ -340,73 +201,46 @@
         calcAuto: "Fetch & Calculate",
         reset: "Reset",
         result: "Result",
-        note: "For educational purposes only – not financial advice.",
+        hdrMc: "Market Cap (Base)",
+        hdrMs: "Max Supply (Target)",
+        footer: "For educational purposes only – not financial advice."
       }
     };
-    
-    let currentLang = localStorage.getItem("lang") || "de";
-    updateLanguage(currentLang);
-    
-  function updateLanguage(lang) {
-    const t = translations[lang];
-  
-    // Überschriften in den beiden Eingabekarten
-    const cards = document.querySelectorAll(".card");
-    if (cards[0]) {
-      const h2 = cards[0].querySelector("h2");
-      if (h2) h2.textContent = t.manual;
-    }
-    if (cards[1]) {
-      const h2 = cards[1].querySelector("h2");
-      if (h2) h2.textContent = t.auto;
-    }
-  
-    // Labels – erst prüfen, ob sie existieren
-    const labelMc = document.querySelector('label[for="mc"]');
-    if (labelMc) labelMc.textContent = t.marketCap;
-  
-    const labelMs = document.querySelector('label[for="ms"]');
-    if (labelMs) labelMs.textContent = t.maxSupply;
-  
-    const labelBase = document.querySelector('label[for="base"]');
-    if (labelBase) labelBase.textContent = t.baseCoin;
-  
-    const labelTarget = document.querySelector('label[for="target"]');
-    if (labelTarget) labelTarget.textContent = t.targetCoin;
-  
-    // Buttons
-    const calcManualBtn = document.getElementById("calcManual");
-    if (calcManualBtn) calcManualBtn.textContent = t.calcManual;
-  
-    const calcAutoBtn = document.getElementById("calcAuto");
-    if (calcAutoBtn) calcAutoBtn.textContent = t.calcAuto;
-  
-    document.querySelectorAll(".btn.danger").forEach(b => (b.textContent = t.reset));
-  
-    // Ergebnisüberschrift
-    const resultCard = Array.from(cards).find(c => c.querySelector("#price"));
-    if (resultCard) {
-      const h2 = resultCard.querySelector("h2");
-      if (h2) h2.textContent = t.result;
-    }
-  
-    // Hinweistext am Ende
-    const note = document.querySelector("p[style*='Finanz']");
-    if (note) note.textContent = t.note;
-  
-    // Flag im Button
-    const langBtn = document.getElementById("langToggle");
-    if (langBtn) langBtn.textContent = lang === "de" ? "🇩🇪" : "🇬🇧";
-  
-    // Sprache speichern
-    localStorage.setItem("lang", lang);
-  }
 
-    document.getElementById("langToggle").addEventListener("click", () => {
+    let currentLang = localStorage.getItem("lang") || "de";
+
+    function updateLanguage(lang) {
+      const t = translations[lang];
+      $("#content").style.opacity = 0;
+      setTimeout(() => {
+        $("#title").textContent = t.title;
+        $("#subtitle").innerHTML = t.subtitle;
+        $("#infoText").innerHTML = t.info;
+        $("#manualCard h2").textContent = t.manual;
+        $("#autoCard h2").textContent = t.auto;
+        $('label[for="mc"]').textContent = t.marketCap;
+        $('label[for="ms"]').textContent = t.maxSupply;
+        $('label[for="base"]').textContent = t.baseCoin;
+        $('label[for="target"]').textContent = t.targetCoin;
+        $("#calcManual").textContent = t.calcManual;
+        $("#calcAuto").textContent = t.calcAuto;
+        document.querySelectorAll(".btn.danger").forEach(b => b.textContent = t.reset);
+        $("#resultHeading").textContent = t.result;
+        $("#hdrMc").textContent = t.hdrMc;
+        $("#hdrMs").textContent = t.hdrMs;
+        $("#footerText").textContent = t.footer;
+        $("#langToggle").textContent = lang === "de" ? "🇩🇪" : "🇬🇧";
+        localStorage.setItem("lang", lang);
+        $("#content").style.opacity = 1;
+      }, 200);
+    }
+
+    updateLanguage(currentLang);
+
+    $("#langToggle").addEventListener("click", () => {
       currentLang = currentLang === "de" ? "en" : "de";
       updateLanguage(currentLang);
     });
-
   </script>
 </body>
 </html>
