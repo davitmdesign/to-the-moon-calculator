@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krypto-Vergleichsrechner – CoinGecko Edition (mit Doku)</title>
+  <title>Krypto-Vergleichsrechner – CoinGecko Edition (mit Analyse & Fair-Value)</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -13,9 +13,7 @@
       --accent: #7aa2ff;
       --danger: #ff8a8a;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       padding: 24px;
@@ -23,23 +21,9 @@
       background: radial-gradient(1200px 700px at 80% -10%, #1a2250 0%, var(--bg) 60%);
       color: var(--text);
     }
-
-    .wrapper {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
-
-    h1 {
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin: 0 0 8px;
-    }
-
-    .sub {
-      color: var(--muted);
-      margin-bottom: 24px;
-    }
+    .wrapper { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    h1 { font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+    .sub { color: var(--muted); margin-bottom: 24px; }
 
     .info-box {
       background: #0f1533;
@@ -52,16 +36,7 @@
       font-size: 15px;
     }
 
-    .info-box strong {
-      color: var(--accent);
-    }
-
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      justify-content: center;
-    }
+    .grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 
     .card {
       flex: 1 1 420px;
@@ -77,100 +52,32 @@
       justify-content: space-between;
     }
 
-    label {
-      font-size: 14px;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 8px;
-    }
-
+    label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; }
     input[type="text"] {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: #0f1533;
-      color: var(--text);
-      font-size: 16px;
+      width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
+      background: #0f1533; color: var(--text); font-size: 16px;
     }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: linear-gradient(180deg, rgba(122,162,255,0.16), rgba(122,162,255,0.06));
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease-in-out;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px;
+      border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(180deg, rgba(122,162,255,0.16), rgba(122,162,255,0.06)); color: var(--text);
+      cursor: pointer; font-weight: 600; transition: all 0.2s ease-in-out; }
+    .btn:hover { transform: translateY(-2px); background: linear-gradient(180deg, rgba(122,162,255,0.3), rgba(122,162,255,0.1)); }
+    .btn.danger { background: linear-gradient(180deg, rgba(255,138,138,0.16), rgba(255,138,138,0.06)); }
+    .row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 14px; }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(180deg, rgba(122,162,255,0.3), rgba(122,162,255,0.1));
+    .out { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; margin: 4px 0 6px; line-height: 1.1; }
+    .kpi { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; }
+    .kpi .box, .calc-box, .analysis-box, .fairvalue-box {
+      background: #0f1533; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px;
+      text-align: center; flex: 1; min-width: 120px;
     }
-
-    .btn.danger {
-      background: linear-gradient(180deg, rgba(255,138,138,0.16), rgba(255,138,138,0.06));
-    }
-
-    .row {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 14px;
-    }
-
-    .out {
-      font-size: 40px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin: 4px 0 6px;
-      line-height: 1.1;
-    }
-
-    .kpi {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .kpi .box {
-      background: #0f1533;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 10px 16px;
-      text-align: center;
-      flex: 1;
-      min-width: 120px;
-    }
-
-    .kpi .hdr {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .kpi .val {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .calc-box {
-      background: #0f1533;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 10px 16px;
-      margin-top: 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-    }
+    .kpi .hdr { font-size: 12px; color: var(--muted); }
+    .kpi .val { font-size: 16px; font-weight: 700; }
+    .calc-box, .analysis-box, .fairvalue-box { color: var(--muted); font-size: 14px; margin-top: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px; }
+    th { color: var(--accent); text-align: left; }
 
     @media (max-width: 600px) {
       body { padding: 16px; }
@@ -183,12 +90,7 @@
   <div class="wrapper">
     <h1>Krypto-Vergleichsrechner (CoinGecko API)</h1>
     <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>.</div>
-
-    <div class="info-box">
-      💡 <strong>Hinweis zur Nutzung:</strong><br>
-      Wähle als <strong>Vergleichs-Coin</strong> am besten ein Projekt mit ähnlicher Funktionalität (z. B. Smart-Contract-Plattform vs. Smart-Contract-Plattform),
-      das bereits <strong>etabliert</strong> und <strong>liquide</strong> ist. Nur so erhältst du einen realistischen Vergleichswert.
-    </div>
+    <div class="info-box">💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.</div>
 
     <div class="grid">
       <div class="card">
@@ -204,7 +106,7 @@
       </div>
 
       <div class="card">
-        <h2>Option 2: Automatische Abfrage</h2>
+        <h2>Option 2: Automatische Abfrage (CoinGecko)</h2>
         <label>Vergleichs-Coin (z. B. ethereum)</label>
         <input id="base" type="text" placeholder="ethereum" />
         <label style="margin-top:14px">Ziel-Coin (z. B. solana)</label>
@@ -224,6 +126,8 @@
         <div class="box"><div class="hdr">Max Supply (Ziel)</div><div id="kpiMs" class="val">—</div></div>
       </div>
       <div id="calcPath" class="calc-box">—</div>
+      <div id="analysis" class="analysis-box">—</div>
+      <div id="fairvalue" class="fairvalue-box">—</div>
       <p style="color: var(--muted); margin-top: 10px;">Nur rechnerische Abschätzung – kein Finanzrat.</p>
     </div>
   </div>
@@ -262,6 +166,30 @@
       $('#calcPath').textContent = text;
     }
 
+    function showFairValue(price, target) {
+      const t = target ? target.toUpperCase() : '';
+      const rows = [
+        { label: 'Konservativ (0.25×)', mult: 0.25 },
+        { label: 'Realistisch (1×)', mult: 1 },
+        { label: 'Optimistisch (3×)', mult: 3 }
+      ];
+      $('#fairvalue').innerHTML = `<strong>Fair-Value-Szenarien ${t ? '(' + t + ')' : ''}</strong><table>` +
+        rows.map(r => `<tr><td>${r.label}</td><td>${formatUSD(price * r.mult)}</td></tr>`).join('') + '</table>';
+    }
+
+    function showAnalysis(price, currentPrice, target) {
+      if (!isFinite(currentPrice) || currentPrice <= 0) {
+        $('#analysis').textContent = '—';
+        return;
+      }
+      const diff = ((price - currentPrice) / currentPrice) * 100;
+      const t = target ? target.toUpperCase() : '';
+      const emoji = diff > 0 ? '🚀' : '📉';
+      $('#analysis').innerHTML = `<strong>Analyse:</strong><br>Aktueller Preis: ${formatUSD(currentPrice)} ${t}<br>` +
+        `Theoretischer Zielpreis: ${formatUSD(price)} ${t}<br>` +
+        `${emoji} Veränderung: ${diff.toFixed(2)} %`;
+    }
+
     function calculateManual() {
       const mc = parseHumanNumber($('#mc').value);
       const ms = parseHumanNumber($('#ms').value);
@@ -274,16 +202,14 @@
       $('#kpiMs').textContent = formatNum(ms);
       $('#price').textContent = `${formatUSD(price)} pro Coin`;
       updateCalcPath(mc, ms, price);
+      showFairValue(price);
+      $('#analysis').textContent = '—';
     }
 
     $('#calcManual').addEventListener('click', calculateManual);
     $('#clearManual').addEventListener('click', () => {
-      $('#mc').value = '';
-      $('#ms').value = '';
-      $('#price').textContent = '—';
-      $('#kpiMc').textContent = '—';
-      $('#kpiMs').textContent = '—';
-      $('#calcPath').textContent = '—';
+      ['#mc', '#ms', '#base', '#target'].forEach(id => $(id).value = '');
+      ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue'].forEach(id => $(id).textContent = '—');
     });
 
     async function fetchCoinById(id) {
@@ -292,7 +218,8 @@
       const data = await res.json();
       return {
         market_cap: data.market_data.market_cap.usd,
-        max_supply: data.market_data.max_supply || data.market_data.circulating_supply || data.market_data.total_supply
+        max_supply: data.market_data.max_supply || data.market_data.circulating_supply || data.market_data.total_supply,
+        current_price: data.market_data.current_price.usd
       };
     }
 
@@ -308,27 +235,26 @@
         const [baseData, targetData] = await Promise.all([fetchCoinById(base), fetchCoinById(target)]);
         const marketCap = baseData.market_cap;
         const maxSupply = targetData.max_supply;
+        const currentPrice = targetData.current_price;
         if (!marketCap || !maxSupply) throw new Error('Fehlende Daten');
         const price = marketCap / maxSupply;
         $('#kpiMc').textContent = `${formatUSD(marketCap)} (${base.toUpperCase()})`;
         $('#kpiMs').textContent = `${formatNum(maxSupply)} (${target.toUpperCase()})`;
         $('#price').textContent = `${formatUSD(price)} pro ${target.toUpperCase()}`;
         updateCalcPath(marketCap, maxSupply, price, base, target);
+        showFairValue(price, target);
+        showAnalysis(price, currentPrice, target);
       } catch (err) {
         $('#price').textContent = `Fehler: ${err.message}`;
-        $('#calcPath').textContent = '—';
+        ['#calcPath', '#analysis', '#fairvalue'].forEach(id => $(id).textContent = '—');
         console.error(err);
       }
     }
 
     $('#calcAuto').addEventListener('click', calculateAuto);
     $('#clearAuto').addEventListener('click', () => {
-      $('#base').value = '';
-      $('#target').value = '';
-      $('#price').textContent = '—';
-      $('#kpiMc').textContent = '—';
-      $('#kpiMs').textContent = '—';
-      $('#calcPath').textContent = '—';
+      ['#base', '#target'].forEach(id => $(id).value = '');
+      ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue'].forEach(id => $(id).textContent = '—');
     });
   </script>
 </body>
