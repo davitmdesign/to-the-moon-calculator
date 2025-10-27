@@ -109,9 +109,23 @@
       .wrapper { padding: 0 12px; }
       .card { padding: 16px; }
     }
+    .lang-toggle {
+      position: fixed;
+      top: 16px;
+      right: 64px; /* etwas Platz neben dem Theme-Button */
+      background: #0f1533;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .lang-toggle:hover { background: #1c2550; }
   </style>
 </head>
 <body>
+  <button class="lang-toggle" id="langToggle">🇩🇪</button>
   <button class="theme-toggle" id="themeToggle">🌙</button>
   <div class="wrapper">
     <h1>Krypto-Vergleichsrechner (CoinGecko API)</h1>
@@ -157,8 +171,8 @@
         <div class="box"><div class="hdr">Max Supply (Ziel)</div><div id="kpiMs" class="val">—</div></div>
       </div>
       <div id="calcPath" class="calc-box">—</div>
-      <div id="fairvalue" class="fairvalue-box">—</div>
       <div id="analysis" class="analysis-box">—</div>
+      <div id="fairvalue" class="fairvalue-box">—</div>
       <p style="color: var(--muted); margin-top: 10px;">Nur rechnerische Abschätzung – keine Finanzberatung.</p>
     </div>
   </div>
@@ -301,6 +315,60 @@
       ['#base', '#target'].forEach(id => $(id).value = '');
       ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
     });
+    const translations = {
+      de: {
+        manual: "Manuelle Eingabe",
+        auto: "Automatische Abfrage (CoinGecko)",
+        marketCap: "Market Cap des Vergleichs-Coins (USD)",
+        maxSupply: "Max Supply des Ziel-Coins (Einheiten)",
+        baseCoin: "Vergleichs-Coin (z. B. ethereum)",
+        targetCoin: "Ziel-Coin (z. B. solana)",
+        calcManual: "Berechnen",
+        calcAuto: "Abrufen & Berechnen",
+        reset: "Reset",
+        result: "Ergebnis",
+        note: "Nur rechnerische Abschätzung – kein Finanzrat.",
+      },
+      en: {
+        manual: "Manual Input",
+        auto: "Automatic Query (CoinGecko)",
+        marketCap: "Market Cap of Base Coin (USD)",
+        maxSupply: "Max Supply of Target Coin (units)",
+        baseCoin: "Base Coin (e.g. ethereum)",
+        targetCoin: "Target Coin (e.g. solana)",
+        calcManual: "Calculate",
+        calcAuto: "Fetch & Calculate",
+        reset: "Reset",
+        result: "Result",
+        note: "For educational purposes only – not financial advice.",
+      }
+    };
+    
+    let currentLang = localStorage.getItem("lang") || "de";
+    updateLanguage(currentLang);
+    
+    function updateLanguage(lang) {
+      const t = translations[lang];
+      document.querySelector("h2:nth-of-type(1)").textContent = t.manual;
+      document.querySelector("h2:nth-of-type(2)").textContent = t.auto;
+      document.querySelector('label[for="mc"]').textContent = t.marketCap;
+      document.querySelector('label[for="ms"]').textContent = t.maxSupply;
+      document.querySelector('label[for="base"]').textContent = t.baseCoin;
+      document.querySelector('label[for="target"]').textContent = t.targetCoin;
+      document.getElementById("calcManual").textContent = t.calcManual;
+      document.getElementById("calcAuto").textContent = t.calcAuto;
+      document.querySelectorAll(".btn.danger").forEach(b => b.textContent = t.reset);
+      document.querySelector(".card h2 + .out")?.previousElementSibling?.textContent = t.result;
+      document.querySelector("p[style*='kein Finanzrat']").textContent = t.note;
+      document.getElementById("langToggle").textContent = lang === "de" ? "🇩🇪" : "🇬🇧";
+      localStorage.setItem("lang", lang);
+    }
+    
+    document.getElementById("langToggle").addEventListener("click", () => {
+      currentLang = currentLang === "de" ? "en" : "de";
+      updateLanguage(currentLang);
+    });
+
   </script>
 </body>
 </html>
