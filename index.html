@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krypto-Vergleichsrechner – CoinGecko Edition (mit Rechenweg)</title>
+  <title>Krypto-Vergleichsrechner – CoinGecko Edition (mit Doku)</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -39,6 +39,21 @@
     .sub {
       color: var(--muted);
       margin-bottom: 24px;
+    }
+
+    .info-box {
+      background: #0f1533;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 15px;
+    }
+
+    .info-box strong {
+      color: var(--accent);
     }
 
     .grid {
@@ -158,22 +173,22 @@
     }
 
     @media (max-width: 600px) {
-      body {
-        padding: 16px;
-      }
-      .wrapper {
-        padding: 0 12px;
-      }
-      .card {
-        padding: 16px;
-      }
+      body { padding: 16px; }
+      .wrapper { padding: 0 12px; }
+      .card { padding: 16px; }
     }
   </style>
 </head>
 <body>
   <div class="wrapper">
     <h1>Krypto-Vergleichsrechner (CoinGecko API)</h1>
-    <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>. Gib einfach den <b>vollständigen Coinnamen</b> (z. B. <code>solana</code>, <code>ethereum</code>) ein.</div>
+    <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>.</div>
+
+    <div class="info-box">
+      💡 <strong>Hinweis zur Nutzung:</strong><br>
+      Wähle als <strong>Vergleichs-Coin</strong> am besten ein Projekt mit ähnlicher Funktionalität (z. B. Smart-Contract-Plattform vs. Smart-Contract-Plattform),
+      das bereits <strong>etabliert</strong> und <strong>liquide</strong> ist. Nur so erhältst du einen realistischen Vergleichswert.
+    </div>
 
     <div class="grid">
       <div class="card">
