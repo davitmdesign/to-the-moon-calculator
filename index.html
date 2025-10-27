@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krypto-Vergleichsrechner – CoinGecko Edition (Ticker-Version)</title>
+  <title>Krypto-Vergleichsrechner – CoinGecko Edition (Ticker-Version mit Auswahl)</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -69,8 +69,8 @@
 </head>
 <body>
   <div class="wrapper">
-    <h1>Krypto-Vergleichsrechner (CoinGecko API – Ticker Version)</h1>
-    <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>. Du kannst jetzt Tickersymbole wie <b>SOL</b> oder <b>ETH</b> eingeben.</div>
+    <h1>Krypto-Vergleichsrechner (CoinGecko API – Ticker mit Auswahl)</h1>
+    <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>. Du kannst jetzt Tickersymbole wie <b>SOL</b> oder <b>ETH</b> eingeben. Falls es mehrere Treffer gibt, kannst du den richtigen auswählen.</div>
 
     <div class="grid">
       <div class="card">
@@ -112,12 +112,26 @@
   <script>
     const $ = (q) => document.querySelector(q);
 
-    // Mapping: finde CoinGecko-ID anhand des Tickers
+    // Mapping: finde CoinGecko-ID anhand des Tickers mit Auswahl bei Mehrfachtreffern
     async function getCoinIdFromTicker(ticker) {
       const res = await fetch('https://api.coingecko.com/api/v3/coins/list');
       const list = await res.json();
-      const coin = list.find(c => c.symbol.toLowerCase() === ticker.toLowerCase());
-      return coin ? coin.id : null;
+      const matches = list.filter(c => c.symbol.toLowerCase() === ticker.toLowerCase());
+
+      if (matches.length === 0) return null;
+      if (matches.length === 1) return matches[0].id;
+
+      // Wenn mehrere Coins denselben Ticker haben → Auswahl anzeigen
+      const options = matches.map((c, i) => `${i + 1}. ${c.id}`).join('\n');
+      const input = prompt(`Mehrere Coins mit dem Ticker ${ticker} gefunden:\n${options}\n\nGib die Nummer oder den exakten Namen ein:`);
+
+      if (!input) return matches[0].id;
+
+      const choiceIndex = parseInt(input) - 1;
+      if (!isNaN(choiceIndex) && matches[choiceIndex]) return matches[choiceIndex].id;
+
+      const byName = matches.find(c => c.id.toLowerCase() === input.toLowerCase());
+      return byName ? byName.id : matches[0].id;
     }
 
     function parseHumanNumber(str) {
@@ -167,7 +181,7 @@
       $('#kpiMs').textContent = '—';
     });
 
-    // Automatische Berechnung mit Ticker → ID → Daten
+    // Automatische Berechnung mit Ticker → Auswahl → ID → Daten
     async function fetchCoinByTicker(ticker) {
       const id = await getCoinIdFromTicker(ticker);
       if (!id) throw new Error(`Coin für Ticker ${ticker} nicht gefunden.`);
@@ -176,7 +190,7 @@
       const data = await res.json();
       return {
         market_cap: data.market_data.market_cap.usd,
-        max_supply: data.market_data.max_supply || data.market_data.circulating_supply
+        max_supply: data.market_data.max_supply || data.market_data.circulating_supply || data.market_data.total_supply
       };
     }
 
@@ -198,7 +212,7 @@
         $('#kpiMs').textContent = formatNum(maxSupply);
         $('#price').textContent = `${formatUSD(price)} pro ${target}`;
       } catch (err) {
-        $('#price').textContent = 'Fehler beim Abrufen der CoinGecko-Daten.';
+        $('#price').textContent = `Fehler: ${err.message}`;
         console.error(err);
       }
     }
