@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krypto-Vergleichsrechner – CoinGecko Edition (ID-Version)</title>
+  <title>Krypto-Vergleichsrechner – CoinGecko Edition (mit ID-Autovervollständigung)</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -38,7 +38,7 @@
     label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; }
     .row { display: flex; gap: 12px; justify-content: flex-end; }
 
-    input[type="text"] {
+    input[type="text"], datalist {
       width: 100%;
       padding: 14px;
       border-radius: 12px;
@@ -46,7 +46,6 @@
       background: #0f1533;
       color: var(--text);
       font-size: 16px;
-      text-transform: lowercase;
     }
 
     .btn {
@@ -65,13 +64,12 @@
     .kpi .box { background: #0f1533; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px; text-align: center; }
     .kpi .hdr { font-size: 12px; color: var(--muted); }
     .kpi .val { font-size: 16px; font-weight: 700; }
-    .note { font-size: 12px; color: var(--muted); margin-top: 8px; }
   </style>
 </head>
 <body>
   <div class="wrapper">
-    <h1>Krypto-Vergleichsrechner (CoinGecko API – ID-Eingabe)</h1>
-    <div class="sub">Automatische Daten per <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>. <b>Wichtig:</b> Nutze den <b>CoinGecko-ID‑Namen</b> (z. B. <code>ethereum</code>, <code>solana</code>), nicht den Ticker.</div>
+    <h1>Krypto-Vergleichsrechner (CoinGecko ID-Autovervollständigung)</h1>
+    <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit CoinGecko. Gib die CoinGecko-IDs ein (z. B. <code>ethereum</code>, <code>solana</code>) oder wähle sie aus der Vorschlagsliste.</div>
 
     <div class="grid">
       <div class="card">
@@ -88,15 +86,15 @@
 
       <div class="card">
         <h2>Option 2: Automatische Abfrage (CoinGecko)</h2>
-        <label>Vergleichs-Coin (ID, z. B. <code>ethereum</code>)</label>
-        <input id="base" type="text" placeholder="ethereum" />
-        <label style="margin-top:14px">Ziel-Coin (ID, z. B. <code>solana</code>)</label>
-        <input id="target" type="text" placeholder="solana" />
+        <label>Vergleichs-Coin (ID, z. B. ethereum)</label>
+        <input id="base" list="coinList" type="text" placeholder="ethereum" />
+        <label style="margin-top:14px">Ziel-Coin (ID, z. B. solana)</label>
+        <input id="target" list="coinList" type="text" placeholder="solana" />
+        <datalist id="coinList"></datalist>
         <div class="row" style="margin-top:14px">
           <button class="btn danger" id="clearAuto">Reset</button>
           <button class="btn" id="calcAuto">Abrufen & Berechnen</button>
         </div>
-        <div class="note">IDs findest du über die API‑Liste: <a href="https://api.coingecko.com/api/v3/coins/list" target="_blank">/api/v3/coins/list</a></div>
       </div>
     </div>
 
@@ -113,6 +111,19 @@
 
   <script>
     const $ = (q) => document.querySelector(q);
+
+    async function loadCoinList() {
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/coins/list');
+        const data = await res.json();
+        const list = $('#coinList');
+        list.innerHTML = data.map(c => `<option value="${c.id}">${c.symbol.toUpperCase()}</option>`).join('');
+      } catch (err) {
+        console.error('Fehler beim Laden der Coin-Liste:', err);
+      }
+    }
+
+    loadCoinList();
 
     function parseHumanNumber(str) {
       if (!str) return NaN;
@@ -138,7 +149,6 @@
       return new Intl.NumberFormat('de-DE').format(n);
     }
 
-    // Manuelle Berechnung
     function calculateManual() {
       const mc = parseHumanNumber($('#mc').value);
       const ms = parseHumanNumber($('#ms').value);
@@ -161,9 +171,8 @@
       $('#kpiMs').textContent = '—';
     });
 
-    // Automatische Berechnung mit CoinGecko-ID (kein Ticker)
     async function fetchCoinById(id) {
-      const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id.toLowerCase()}`);
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}`);
       if (!res.ok) throw new Error('Fehler bei CoinGecko');
       const data = await res.json();
       return {
@@ -176,7 +185,7 @@
       const base = $('#base').value.trim().toLowerCase();
       const target = $('#target').value.trim().toLowerCase();
       if (!base || !target) {
-        $('#price').textContent = 'Bitte beide Coin-IDs eingeben (z. B. ethereum, solana).';
+        $('#price').textContent = 'Bitte beide Coin-IDs eingeben oder auswählen.';
         return;
       }
       $('#price').textContent = 'Lade Daten...';
@@ -190,7 +199,7 @@
         $('#kpiMs').textContent = formatNum(maxSupply);
         $('#price').textContent = `${formatUSD(price)} pro ${target}`;
       } catch (err) {
-        $('#price').textContent = `Fehler: ${err.message}. Prüfe die Coin-ID unter /api/v3/coins/list`;
+        $('#price').textContent = `Fehler: ${err.message}`;
         console.error(err);
       }
     }
