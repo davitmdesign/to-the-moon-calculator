@@ -27,57 +27,31 @@
     .sub { color: var(--muted); margin-bottom: 24px; }
 
     .theme-toggle, .lang-toggle {
-      position: fixed;
-      top: 16px;
-      background: #0f1533;
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      position: fixed; top: 16px; background: #0f1533; color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px 12px; cursor: pointer; transition: all .2s ease;
     }
     .theme-toggle:hover, .lang-toggle:hover { background: #1c2550; }
     .theme-toggle { right: 16px; }
     .lang-toggle { right: 64px; }
 
     .info-box {
-      background: #0f1533;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 15px;
+      background: #0f1533; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px 20px;
+      margin-bottom: 24px; color: var(--muted); line-height: 1.5; font-size: 15px;
     }
 
     .grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 
     .card {
-      flex: 1 1 420px;
-      min-width: 320px;
+      flex: 1 1 420px; min-width: 320px;
       background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 20px;
-      backdrop-filter: blur(6px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px;
+      backdrop-filter: blur(6px); box-shadow: 0 20px 40px rgba(0,0,0,0.25);
     }
 
     label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; }
-    input[type="text"] {
-      width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
-      background: #0f1533; color: var(--text); font-size: 16px;
-    }
+    input[type="text"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); background: #0f1533; color: var(--text); font-size: 16px; }
 
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-      background: linear-gradient(180deg, rgba(122,162,255,0.16), rgba(122,162,255,0.06));
-      color: var(--text); cursor: pointer; font-weight: 600;
-      transition: background .2s ease;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: linear-gradient(180deg, rgba(122,162,255,0.16), rgba(122,162,255,0.06)); color: var(--text); cursor: pointer; font-weight: 600; transition: background .2s ease; }
     .btn:hover { background: linear-gradient(180deg, rgba(122,162,255,0.3), rgba(122,162,255,0.1)); }
     .btn.danger { background: linear-gradient(180deg, rgba(255,138,138,0.16), rgba(255,138,138,0.06)); }
 
@@ -86,19 +60,11 @@
     .out { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; margin: 4px 0 6px; line-height: 1.1; }
 
     .kpi { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; }
-    .kpi .box, .calc-box, .analysis-box, .fairvalue-box, .coininfo-box {
-      background: #0f1533; border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px; padding: 10px 16px; text-align: center; flex: 1; min-width: 120px;
-    }
-
+    .kpi .box, .calc-box, .analysis-box, .fairvalue-box, .coininfo-box { background: #0f1533; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px; text-align: center; flex: 1; min-width: 120px; }
     .hdr { font-size: 12px; color: var(--muted); }
     .val { font-size: 16px; font-weight: 700; }
 
-    @media (max-width: 600px) {
-      body { padding: 16px; }
-      .wrapper { padding: 0 12px; }
-      .card { padding: 16px; }
-    }
+    @media (max-width: 600px) { body { padding: 16px; } .wrapper { padding: 0 12px; } .card { padding: 16px; } }
   </style>
 </head>
 <body>
@@ -106,20 +72,16 @@
   <button class="theme-toggle" id="themeToggle">🌙</button>
   <div class="wrapper" id="content">
     <h1 id="title">Krypto-Vergleichsrechner (CoinGecko API)</h1>
-    <div class="sub" id="subtitle">
-      Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>.
-    </div>
+    <div class="sub" id="subtitle">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>.</div>
 
-    <div class="info-box" id="infoText">
-      💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.
-    </div>
+    <div class="info-box" id="infoText">💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.</div>
 
     <div class="grid">
       <div class="card" id="manualCard">
-        <h2>Manuelle Eingabe</h2>
-        <label for="mc">Market Cap des Vergleichs-Coins (USD)</label>
+        <h2 id="h2Manual">Manuelle Eingabe</h2>
+        <label for="mc" id="lblMc">Market Cap des Vergleichs-Coins (USD)</label>
         <input id="mc" type="text" placeholder="z. B. 510B" />
-        <label for="ms" style="margin-top:14px">Max Supply des Ziel-Coins (Einheiten)</label>
+        <label for="ms" id="lblMs" style="margin-top:14px">Max Supply des Ziel-Coins (Einheiten)</label>
         <input id="ms" type="text" placeholder="z. B. 612567980" />
         <div class="row">
           <button class="btn danger" id="clearManual">Reset</button>
@@ -128,10 +90,10 @@
       </div>
 
       <div class="card" id="autoCard">
-        <h2>Automatische Abfrage</h2>
-        <label for="base">Vergleichs-Coin (z. B. ethereum)</label>
+        <h2 id="h2Auto">Automatische Abfrage</h2>
+        <label for="base" id="lblBase">Vergleichs-Coin (z. B. ethereum)</label>
         <input id="base" type="text" placeholder="ethereum" />
-        <label for="target" style="margin-top:14px">Ziel-Coin (z. B. solana)</label>
+        <label for="target" id="lblTarget" style="margin-top:14px">Ziel-Coin (z. B. solana)</label>
         <input id="target" type="text" placeholder="solana" />
         <div class="row">
           <button class="btn danger" id="clearAuto">Reset</button>
@@ -167,78 +129,186 @@
       $('#themeToggle').textContent = light ? '🌚' : '🌙';
     });
 
-    // Translations
+    // ===== Utilities =====
+    function parseHumanNumber(str) {
+      if (!str) return NaN;
+      const s = String(str).trim().replace(/\s+/g, '');
+      const match = s.match(/^([0-9]*\.?[0-9]+)([kKmMbBtT])?$/);
+      if (match) {
+        let num = parseFloat(match[1]);
+        const map = { K: 1e3, M: 1e6, B: 1e9, T: 1e12 };
+        const suf = match[2] ? match[2].toUpperCase() : null;
+        if (suf && map[suf]) num *= map[suf];
+        return num;
+      }
+      return parseFloat(s.replace(/[^0-9.]/g, ''));
+    }
+    function formatUSD(n) { if (!isFinite(n)) return '—'; return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n); }
+    function formatNum(n) { if (!isFinite(n)) return '—'; return new Intl.NumberFormat('de-DE').format(n); }
+
+    function updateCalcPath(mc, ms, price, base, target) {
+      const baseName = base ? base.toUpperCase() : '';
+      const targetName = target ? target.toUpperCase() : '';
+      $('#calcPath').textContent = `${formatUSD(mc)}${baseName ? ` (${baseName})` : ''} ÷ ${formatNum(ms)}${targetName ? ` (${targetName})` : ''} = ${formatUSD(price)}${targetName ? ` pro ${targetName}` : ''}`;
+    }
+    function showFairValue(price, target) {
+      const t = target ? target.toUpperCase() : '';
+      const rows = [ { label: 'Konservativ (0.25×)', mult: 0.25 }, { label: 'Realistisch (1×)', mult: 1 }, { label: 'Optimistisch (3×)', mult: 3 } ];
+      $('#fairvalue').innerHTML = `<strong>Fair-Value-Szenarien ${t ? '(' + t + ')' : ''}</strong><table>` +
+        rows.map(r => `<tr><td>${r.label}</td><td>${formatUSD(price * r.mult)}</td></tr>`).join('') + '</table>';
+    }
+    function showAnalysis(price, currentPrice, target) {
+      if (!isFinite(currentPrice) || currentPrice <= 0) { $('#analysis').textContent = '—'; return; }
+      const diff = ((price - currentPrice) / currentPrice) * 100;
+      const t = target ? target.toUpperCase() : '';
+      const emoji = diff > 0 ? '🚀' : '📉';
+      $('#analysis').innerHTML = `<strong>Analyse:</strong><br>Aktueller Preis: ${formatUSD(currentPrice)} ${t}<br>` +
+        `Theoretischer Zielpreis: ${formatUSD(price)} ${t}<br>` +
+        `${emoji} Veränderung: ${diff.toFixed(2)} %`;
+    }
+    function showCoinInfo(data, name) {
+      const img = data.image?.small || '';
+      const rank = data.market_cap_rank ? `#${data.market_cap_rank}` : '—';
+      const price = data.market_data?.current_price?.usd;
+      const mc = data.market_data?.market_cap?.usd;
+      $('#coinInfo').innerHTML = `
+        <img src="${img}" alt="${name}" style="width:48px;height:48px;border-radius:50%;margin-bottom:6px;"/>
+        <div><strong>${(name||'').toUpperCase()}</strong> (${rank})</div>
+        <div>Aktueller Preis: ${formatUSD(price)}</div>
+        <div>Market Cap: ${formatUSD(mc)}</div>
+      `;
+    }
+
+    async function fetchCoinById(id) {
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/${encodeURIComponent(id)}`);
+      if (!res.ok) throw new Error('Fehler bei CoinGecko');
+      return await res.json();
+    }
+
+    // ===== Calculations =====
+    function calculateManual() {
+      const mc = parseHumanNumber($('#mc').value);
+      const ms = parseHumanNumber($('#ms').value);
+      if (!isFinite(mc) || !isFinite(ms) || mc <= 0 || ms <= 0) { $('#price').textContent = 'Bitte gültige Werte eingeben.'; return; }
+      const price = mc / ms;
+      $('#kpiMc').textContent = formatUSD(mc);
+      $('#kpiMs').textContent = formatNum(ms);
+      $('#price').textContent = `${formatUSD(price)} pro Coin`;
+      updateCalcPath(mc, ms, price);
+      showFairValue(price);
+      $('#analysis').textContent = '—';
+      $('#coinInfo').textContent = '—';
+    }
+
+    async function calculateAuto() {
+      const base = $('#base').value.trim().toLowerCase();
+      const target = $('#target').value.trim().toLowerCase();
+      if (!base || !target) { $('#price').textContent = 'Bitte beide Coinnamen eingeben.'; return; }
+      $('#price').textContent = 'Lade Daten...';
+      try {
+        const [baseData, targetData] = await Promise.all([fetchCoinById(base), fetchCoinById(target)]);
+        const marketCap = baseData.market_data?.market_cap?.usd;
+        const maxSupply = targetData.market_data?.max_supply || targetData.market_data?.circulating_supply || targetData.market_data?.total_supply;
+        const currentPrice = targetData.market_data?.current_price?.usd;
+        if (!marketCap || !maxSupply) throw new Error('Fehlende Daten');
+        const price = marketCap / maxSupply;
+        $('#kpiMc').textContent = `${formatUSD(marketCap)} (${base.toUpperCase()})`;
+        $('#kpiMs').textContent = `${formatNum(maxSupply)} (${target.toUpperCase()})`;
+        $('#price').textContent = `${formatUSD(price)} pro ${target.toUpperCase()}`;
+        updateCalcPath(marketCap, maxSupply, price, base, target);
+        showFairValue(price, target);
+        showAnalysis(price, currentPrice, target);
+        showCoinInfo(targetData, target);
+      } catch (err) {
+        $('#price').textContent = `Fehler: ${err.message}`;
+        ['#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
+        console.error(err);
+      }
+    }
+
+    // ===== Events =====
+    $('#calcManual').addEventListener('click', calculateManual);
+    $('#calcAuto').addEventListener('click', calculateAuto);
+    $('#clearManual').addEventListener('click', () => {
+      ['#mc', '#ms', '#base', '#target'].forEach(id => $(id).value = '');
+      ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
+    });
+    $('#clearAuto').addEventListener('click', () => {
+      ['#base', '#target'].forEach(id => $(id).value = '');
+      ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
+    });
+
+    // ===== i18n (DE/EN) =====
     const translations = {
       de: {
-        title: "Krypto-Vergleichsrechner (CoinGecko API)",
-        subtitle: "Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von CoinGecko.",
-        info: "💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.",
-        manual: "Manuelle Eingabe",
-        auto: "Automatische Abfrage",
-        marketCap: "Market Cap des Vergleichs-Coins (USD)",
-        maxSupply: "Max Supply des Ziel-Coins (Einheiten)",
-        baseCoin: "Vergleichs-Coin (z. B. ethereum)",
-        targetCoin: "Ziel-Coin (z. B. solana)",
-        calcManual: "Berechnen",
-        calcAuto: "Abrufen & Berechnen",
-        reset: "Reset",
-        result: "Ergebnis",
-        hdrMc: "Market Cap (Vergleich)",
-        hdrMs: "Max Supply (Ziel)",
-        footer: "Nur rechnerische Abschätzung – keine Finanzberatung."
+        title: 'Krypto-Vergleichsrechner (CoinGecko API)',
+        subtitle: 'Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von CoinGecko.',
+        info: '💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.',
+        manual: 'Manuelle Eingabe', auto: 'Automatische Abfrage',
+        marketCap: 'Market Cap des Vergleichs-Coins (USD)', maxSupply: 'Max Supply des Ziel-Coins (Einheiten)',
+        baseCoin: 'Vergleichs-Coin (z. B. ethereum)', targetCoin: 'Ziel-Coin (z. B. solana)',
+        calcManual: 'Berechnen', calcAuto: 'Abrufen & Berechnen', reset: 'Reset',
+        result: 'Ergebnis', hdrMc: 'Market Cap (Vergleich)', hdrMs: 'Max Supply (Ziel)',
+        footer: 'Nur rechnerische Abschätzung – keine Finanzberatung.',
+        placeholders: { mc: 'z. B. 510B', ms: 'z. B. 612567980', base: 'ethereum', target: 'solana' },
+        errors: { invalid: 'Bitte gültige Werte eingeben.', needBoth: 'Bitte beide Coinnamen eingeben.', loading: 'Lade Daten...' }
       },
       en: {
-        title: "Crypto Comparison Calculator (CoinGecko API)",
-        subtitle: "Calculate the theoretical price of a coin – manually or automatically using data from CoinGecko.",
-        info: "💡 <strong>Note:</strong> Choose a comparison coin with similar functionality and a solid market position for realistic results.",
-        manual: "Manual Input",
-        auto: "Automatic Query",
-        marketCap: "Market Cap of Base Coin (USD)",
-        maxSupply: "Max Supply of Target Coin (units)",
-        baseCoin: "Base Coin (e.g. ethereum)",
-        targetCoin: "Target Coin (e.g. solana)",
-        calcManual: "Calculate",
-        calcAuto: "Fetch & Calculate",
-        reset: "Reset",
-        result: "Result",
-        hdrMc: "Market Cap (Base)",
-        hdrMs: "Max Supply (Target)",
-        footer: "For educational purposes only – not financial advice."
+        title: 'Crypto Comparison Calculator (CoinGecko API)',
+        subtitle: 'Calculate the theoretical price of a coin – manually or automatically using data from CoinGecko.',
+        info: '💡 <strong>Note:</strong> Choose a comparison coin with similar functionality and a solid market position for realistic results.',
+        manual: 'Manual Input', auto: 'Automatic Query',
+        marketCap: 'Market Cap of Base Coin (USD)', maxSupply: 'Max Supply of Target Coin (units)',
+        baseCoin: 'Base Coin (e.g. ethereum)', targetCoin: 'Target Coin (e.g. solana)',
+        calcManual: 'Calculate', calcAuto: 'Fetch & Calculate', reset: 'Reset',
+        result: 'Result', hdrMc: 'Market Cap (Base)', hdrMs: 'Max Supply (Target)',
+        footer: 'For educational purposes only – not financial advice.',
+        placeholders: { mc: 'e.g. 510B', ms: 'e.g. 612567980', base: 'ethereum', target: 'solana' },
+        errors: { invalid: 'Please enter valid values.', needBoth: 'Please enter both coin names.', loading: 'Loading data...' }
       }
     };
 
-    let currentLang = localStorage.getItem("lang") || "de";
+    let currentLang = localStorage.getItem('lang') || 'de';
 
-    function updateLanguage(lang) {
+    function applyText(lang) {
       const t = translations[lang];
-      $("#content").style.opacity = 0;
-      setTimeout(() => {
-        $("#title").textContent = t.title;
-        $("#subtitle").innerHTML = t.subtitle;
-        $("#infoText").innerHTML = t.info;
-        $("#manualCard h2").textContent = t.manual;
-        $("#autoCard h2").textContent = t.auto;
-        $('label[for="mc"]').textContent = t.marketCap;
-        $('label[for="ms"]').textContent = t.maxSupply;
-        $('label[for="base"]').textContent = t.baseCoin;
-        $('label[for="target"]').textContent = t.targetCoin;
-        $("#calcManual").textContent = t.calcManual;
-        $("#calcAuto").textContent = t.calcAuto;
-        document.querySelectorAll(".btn.danger").forEach(b => b.textContent = t.reset);
-        $("#resultHeading").textContent = t.result;
-        $("#hdrMc").textContent = t.hdrMc;
-        $("#hdrMs").textContent = t.hdrMs;
-        $("#footerText").textContent = t.footer;
-        $("#langToggle").textContent = lang === "de" ? "🇩🇪" : "🇬🇧";
-        localStorage.setItem("lang", lang);
-        $("#content").style.opacity = 1;
-      }, 200);
+      $('#title').textContent = t.title;
+      $('#subtitle').innerHTML = t.subtitle;
+      $('#infoText').innerHTML = t.info;
+      $('#h2Manual').textContent = t.manual;
+      $('#h2Auto').textContent = t.auto;
+      $('#lblMc').textContent = t.marketCap;
+      $('#lblMs').textContent = t.maxSupply;
+      $('#lblBase').textContent = t.baseCoin;
+      $('#lblTarget').textContent = t.targetCoin;
+      $('#calcManual').textContent = t.calcManual;
+      $('#calcAuto').textContent = t.calcAuto;
+      document.querySelectorAll('.btn.danger').forEach(b => b.textContent = t.reset);
+      $('#resultHeading').textContent = t.result;
+      $('#hdrMc').textContent = t.hdrMc;
+      $('#hdrMs').textContent = t.hdrMs;
+      $('#footerText').textContent = t.footer;
+      // placeholders
+      $('#mc').placeholder = t.placeholders.mc;
+      $('#ms').placeholder = t.placeholders.ms;
+      $('#base').placeholder = t.placeholders.base;
+      $('#target').placeholder = t.placeholders.target;
+      // flag
+      $('#langToggle').textContent = lang === 'de' ? '🇩🇪' : '🇬🇧';
     }
 
+    function updateLanguage(lang) {
+      const el = $('#content');
+      el.style.opacity = 0;
+      setTimeout(() => { applyText(lang); localStorage.setItem('lang', lang); el.style.opacity = 1; }, 200);
+    }
+
+    // initial
     updateLanguage(currentLang);
 
-    $("#langToggle").addEventListener("click", () => {
-      currentLang = currentLang === "de" ? "en" : "de";
+    // language toggle
+    $('#langToggle').addEventListener('click', () => {
+      currentLang = currentLang === 'de' ? 'en' : 'de';
       updateLanguage(currentLang);
     });
   </script>
