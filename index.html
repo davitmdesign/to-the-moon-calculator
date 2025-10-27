@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Krypto-Vergleichsrechner – CoinGecko Edition (Ticker-Version)</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #121833;
+      --muted: #93a3c0;
+      --text: #e9eefc;
+      --accent: #7aa2ff;
+      --accent-2: #8ef0d6;
+      --danger: #ff8a8a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 32px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 700px at 80% -10%, #1a2250 0%, var(--bg) 60%);
+      color: var(--text);
+    }
+    .wrapper { max-width: 1100px; margin: 0 auto; }
+    h1 { font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+    .sub { color: var(--muted); margin-bottom: 24px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 8px; }
+    .row { display: flex; gap: 12px; justify-content: flex-end; }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #0f1533;
+      color: var(--text);
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(180deg, rgba(122,162,255,0.16), rgba(122,162,255,0.06));
+      color: var(--text); cursor: pointer; font-weight: 600;
+    }
+    .btn.danger { background: linear-gradient(180deg, rgba(255,138,138,0.16), rgba(255,138,138,0.06)); }
+
+    .out {
+      font-size: 40px; font-weight: 800; letter-spacing: -0.02em; margin: 4px 0 6px; line-height: 1.1;
+    }
+
+    .kpi { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; }
+    .kpi .box { background: #0f1533; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px; text-align: center; }
+    .kpi .hdr { font-size: 12px; color: var(--muted); }
+    .kpi .val { font-size: 16px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>Krypto-Vergleichsrechner (CoinGecko API – Ticker Version)</h1>
+    <div class="sub">Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>. Du kannst jetzt Tickersymbole wie <b>SOL</b> oder <b>ETH</b> eingeben.</div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Option 1: Manuelle Eingabe</h2>
+        <label>Market Cap des Vergleichs-Coins (USD)</label>
+        <input id="mc" type="text" placeholder="z. B. 510B" />
+        <label style="margin-top:14px">Max Supply des Ziel-Coins (Einheiten)</label>
+        <input id="ms" type="text" placeholder="z. B. 612567980" />
+        <div class="row" style="margin-top:14px">
+          <button class="btn danger" id="clearManual">Reset</button>
+          <button class="btn" id="calcManual">Berechnen</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Option 2: Automatische Abfrage (CoinGecko)</h2>
+        <label>Vergleichs-Coin (Ticker, z. B. ETH)</label>
+        <input id="base" type="text" placeholder="ETH" />
+        <label style="margin-top:14px">Ziel-Coin (Ticker, z. B. SOL)</label>
+        <input id="target" type="text" placeholder="SOL" />
+        <div class="row" style="margin-top:14px">
+          <button class="btn danger" id="clearAuto">Reset</button>
+          <button class="btn" id="calcAuto">Abrufen & Berechnen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px; text-align:center;">
+      <h2>Ergebnis</h2>
+      <div id="price" class="out">—</div>
+      <div class="kpi">
+        <div class="box"><div class="hdr">Market Cap (Vergleich)</div><div id="kpiMc" class="val">—</div></div>
+        <div class="box"><div class="hdr">Max Supply (Ziel)</div><div id="kpiMs" class="val">—</div></div>
+      </div>
+      <p style="color: var(--muted); margin-top: 10px;">Nur rechnerische Abschätzung – kein Finanzrat.</p>
+    </div>
+  </div>
+
+  <script>
+    const $ = (q) => document.querySelector(q);
+
+    // Mapping: finde CoinGecko-ID anhand des Tickers
+    async function getCoinIdFromTicker(ticker) {
+      const res = await fetch('https://api.coingecko.com/api/v3/coins/list');
+      const list = await res.json();
+      const coin = list.find(c => c.symbol.toLowerCase() === ticker.toLowerCase());
+      return coin ? coin.id : null;
+    }
+
+    function parseHumanNumber(str) {
+      if (!str) return NaN;
+      const s = String(str).trim().replace(/\s+/g, '');
+      const match = s.match(/^([0-9]*\.?[0-9]+)([kKmMbBtT])?$/);
+      if (match) {
+        let num = parseFloat(match[1]);
+        const map = { K: 1e3, M: 1e6, B: 1e9, T: 1e12 };
+        const suf = match[2] ? match[2].toUpperCase() : null;
+        if (suf && map[suf]) num *= map[suf];
+        return num;
+      }
+      return parseFloat(s.replace(/[^0-9.]/g, ''));
+    }
+
+    function formatUSD(n) {
+      if (!isFinite(n)) return '—';
+      return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n);
+    }
+
+    function formatNum(n) {
+      if (!isFinite(n)) return '—';
+      return new Intl.NumberFormat('de-DE').format(n);
+    }
+
+    // Manuelle Berechnung
+    function calculateManual() {
+      const mc = parseHumanNumber($('#mc').value);
+      const ms = parseHumanNumber($('#ms').value);
+      if (!isFinite(mc) || !isFinite(ms) || mc <= 0 || ms <= 0) {
+        $('#price').textContent = 'Bitte gültige Werte eingeben.';
+        return;
+      }
+      const price = mc / ms;
+      $('#kpiMc').textContent = formatUSD(mc);
+      $('#kpiMs').textContent = formatNum(ms);
+      $('#price').textContent = `${formatUSD(price)} pro Coin`;
+    }
+
+    $('#calcManual').addEventListener('click', calculateManual);
+    $('#clearManual').addEventListener('click', () => {
+      $('#mc').value = '';
+      $('#ms').value = '';
+      $('#price').textContent = '—';
+      $('#kpiMc').textContent = '—';
+      $('#kpiMs').textContent = '—';
+    });
+
+    // Automatische Berechnung mit Ticker → ID → Daten
+    async function fetchCoinByTicker(ticker) {
+      const id = await getCoinIdFromTicker(ticker);
+      if (!id) throw new Error(`Coin für Ticker ${ticker} nicht gefunden.`);
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}`);
+      if (!res.ok) throw new Error('Fehler bei CoinGecko');
+      const data = await res.json();
+      return {
+        market_cap: data.market_data.market_cap.usd,
+        max_supply: data.market_data.max_supply || data.market_data.circulating_supply
+      };
+    }
+
+    async function calculateAuto() {
+      const base = $('#base').value.trim().toUpperCase();
+      const target = $('#target').value.trim().toUpperCase();
+      if (!base || !target) {
+        $('#price').textContent = 'Bitte beide Ticker eingeben.';
+        return;
+      }
+      $('#price').textContent = 'Lade Daten...';
+      try {
+        const [baseData, targetData] = await Promise.all([fetchCoinByTicker(base), fetchCoinByTicker(target)]);
+        const marketCap = baseData.market_cap;
+        const maxSupply = targetData.max_supply;
+        if (!marketCap || !maxSupply) throw new Error('Fehlende Daten');
+        const price = marketCap / maxSupply;
+        $('#kpiMc').textContent = formatUSD(marketCap);
+        $('#kpiMs').textContent = formatNum(maxSupply);
+        $('#price').textContent = `${formatUSD(price)} pro ${target}`;
+      } catch (err) {
+        $('#price').textContent = 'Fehler beim Abrufen der CoinGecko-Daten.';
+        console.error(err);
+      }
+    }
+
+    $('#calcAuto').addEventListener('click', calculateAuto);
+    $('#clearAuto').addEventListener('click', () => {
+      $('#base').value = '';
+      $('#target').value = '';
+      $('#price').textContent = '—';
+      $('#kpiMc').textContent = '—';
+      $('#kpiMs').textContent = '—';
+    });
+  </script>
+</body>
+</html>
