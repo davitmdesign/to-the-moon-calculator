@@ -349,8 +349,9 @@
     
     function updateLanguage(lang) {
       const t = translations[lang];
-      document.querySelector("h2:nth-of-type(1)").textContent = t.manual;
-      document.querySelector("h2:nth-of-type(2)").textContent = t.auto;
+      const cards = document.querySelectorAll(".card");
+      if (cards[0]) cards[0].querySelector("h2").textContent = t.manual;
+      if (cards[1]) cards[1].querySelector("h2").textContent = t.auto;
       document.querySelector('label[for="mc"]').textContent = t.marketCap;
       document.querySelector('label[for="ms"]').textContent = t.maxSupply;
       document.querySelector('label[for="base"]').textContent = t.baseCoin;
