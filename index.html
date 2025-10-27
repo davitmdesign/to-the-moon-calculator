@@ -358,7 +358,8 @@
       document.getElementById("calcManual").textContent = t.calcManual;
       document.getElementById("calcAuto").textContent = t.calcAuto;
       document.querySelectorAll(".btn.danger").forEach(b => b.textContent = t.reset);
-      document.querySelector(".card h2 + .out")?.previousElementSibling?.textContent = t.result;
+      const resultHeading = document.querySelector(".card h2 + .out")?.previousElementSibling;
+      if (resultHeading) resultHeading.textContent = t.result;
       document.querySelector("p[style*='kein Finanzrat']").textContent = t.note;
       document.getElementById("langToggle").textContent = lang === "de" ? "🇩🇪" : "🇬🇧";
       localStorage.setItem("lang", lang);
