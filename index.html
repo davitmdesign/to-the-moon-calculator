@@ -202,13 +202,28 @@
       document.body.style.color = light ? '#111' : '#e9eefc';
       $('#themeToggle').textContent = light ? '🌚' : '🌙';
     });
-
+    
     function showResultCard() {
       const card = document.getElementById("resultCard");
-      card.style.display = "block";
-      setTimeout(() => card.classList.add("visible"), 50);
-    }
+      if (!card) return;
     
+      // Sanftes Einblenden + Slide-up-Effekt
+      card.style.display = "block";
+      card.style.opacity = 0;
+      card.style.transform = "translateY(20px)";
+      requestAnimationFrame(() => {
+        card.classList.add("visible");
+        card.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+        card.style.opacity = 1;
+        card.style.transform = "translateY(0)";
+      });
+    
+      // Automatischer Sprung zur Card, wenn eingeblendet
+      setTimeout(() => {
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 400);
+    }
+        
     function hideResultCard() {
       const card = document.getElementById("resultCard");
       card.classList.remove("visible");
