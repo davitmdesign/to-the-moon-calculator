@@ -80,6 +80,15 @@
 
     .error { color: var(--danger); font-size: 13px; margin-top: 6px; }
 
+    #trendDays {
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    body.light #trendDays {
+      background: #fff;
+      color: #111;
+      border-color: rgba(0,0,0,0.2);
+    }
+
     @media (max-width: 600px) { body { padding: 16px; } .wrapper { padding: 0 12px; } .card { padding: 16px; } }
   </style>
 </head>
@@ -143,7 +152,17 @@
     </div>
 
     <div class="card card-lower" style="margin-top:24px; text-align:center;">
-      <canvas id="priceTrend" height="80" style="width:100%; margin-top:12px;"></canvas>
+    <div id="trendContainer" style="margin-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong id="trendTitle">📉 30-Tage-Trend</strong>
+        <select id="trendDays" style="background:#0f1533;color:#e9eefc;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:4px 8px;font-size:14px;">
+          <option value="7">7 Tage</option>
+          <option value="30" selected>30 Tage</option>
+          <option value="90">90 Tage</option>
+        </select>
+      </div>
+      <canvas id="priceTrend" height="80" style="width:100%;border-radius:8px;"></canvas>
+    </div>
       <div id="coinInfo" class="coininfo-box">—</div>
       <h2 id="resultHeading">Ergebnis</h2>
       <div id="price" class="out">—</div>
@@ -242,34 +261,42 @@
         </table>
       `;
     }
-    // ==== Mini Trendchart (Sparkline) ====
-    async function showPriceTrend(targetId) {
+    // ==== Dynamischer Preis-Trend (Sparkline mit Zeitraumwahl) ====
+    async function showPriceTrend(targetId, days = 30) {
       if (!targetId) return;
     
       const canvas = document.getElementById("priceTrend");
       const ctx = canvas.getContext("2d");
+      const title = document.getElementById("trendTitle");
+      const select = document.getElementById("trendDays");
+    
+      // Label aktualisieren
+      const langIsDe = currentLang === "de";
+      title.textContent = langIsDe ? `📉 ${days}-Tage-Trend` : `📉 ${days}-Day Trend`;
+    
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     
       try {
-        // 30-Tage-Preisverlauf abrufen
-        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${encodeURIComponent(targetId)}/market_chart?vs_currency=usd&days=30`);
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${encodeURIComponent(targetId)}/market_chart?vs_currency=usd&days=${days}`);
         const data = await res.json();
         const prices = data.prices.map(p => p[1]);
     
         if (!prices.length) throw new Error("Keine Daten");
     
-        // Canvas-Abmessungen
-        const w = canvas.width = canvas.offsetWidth;
-        const h = canvas.height = 80;
-    
+        const w = (canvas.width = canvas.offsetWidth);
+        const h = (canvas.height = 80);
         const max = Math.max(...prices);
         const min = Math.min(...prices);
         const step = w / (prices.length - 1);
     
+        // Sanftes Einblenden
+        canvas.style.opacity = 0;
+        requestAnimationFrame(() => (canvas.style.opacity = 1));
+    
+        // Linie
         ctx.lineWidth = 2;
         ctx.strokeStyle = "#7aa2ff";
         ctx.beginPath();
-    
         prices.forEach((price, i) => {
           const x = i * step;
           const y = h - ((price - min) / (max - min)) * h;
@@ -278,7 +305,7 @@
         });
         ctx.stroke();
     
-        // Verlaufs-Füllung
+        // Füllung
         const grad = ctx.createLinearGradient(0, 0, 0, h);
         grad.addColorStop(0, "rgba(122,162,255,0.25)");
         grad.addColorStop(1, "rgba(122,162,255,0)");
@@ -292,9 +319,16 @@
         console.error("Trendchart Fehler:", err);
         ctx.font = "14px system-ui";
         ctx.fillStyle = "#93a3c0";
-        ctx.fillText("Keine Trenddaten verfügbar", 10, 40);
+        ctx.fillText(langIsDe ? "Keine Trenddaten verfügbar" : "No trend data available", 10, 40);
+      }
+    
+      // Eventlistener (nur einmal)
+      if (!select.dataset.bound) {
+        select.addEventListener("change", () => showPriceTrend(targetId, select.value));
+        select.dataset.bound = "true";
       }
     }
+
 
     
     function showCoinInfo(data, name) {
@@ -486,7 +520,7 @@
         showAnalysis(price, currentPrice, targetData.symbol);
         showCoinInfo(targetData, targetData.name || target);
         showExtendedAnalysis(baseData, targetData);
-        showPriceTrend(target);
+        showPriceTrend(target, document.getElementById("trendDays").value);
       } catch (err) {
         $('#price').textContent = (currentLang === 'de' ? 'Fehler: ' : 'Error: ') + err.message;
         ['#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
