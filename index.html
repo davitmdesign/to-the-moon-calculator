@@ -91,8 +91,20 @@
     <h1 id="title">ATH Rechner</h1>
     <div class="sub" id="subtitle">Berechne den theoretischen ATH Preis eines Coins – manuell oder automatisch mit Daten von <a href="https://www.coingecko.com/" target="_blank">CoinGecko</a>.</div>
 
-    <div class="info-box" id="infoText">💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.</div>
-
+    <div class="info-box" id="infoText">
+      💡 <strong>Hinweis:</strong><br><br>
+      Bei dieser Berechnung wird angenommen, dass der Ziel-Coin (z. B. Solana) irgendwann die gleiche 
+      <strong>Marktkapitalisierung</strong> wie der Vergleichs-Coin (z. B. Ethereum) erreicht.<br><br>
+      Der theoretische Preis ergibt sich aus folgender Formel:<br>
+      <code>Preis = (Market Cap des Vergleichs-Coins) ÷ (Max Supply des Ziel-Coins)</code><br><br>
+      Das bedeutet: Wenn das Projekt den gleichen Gesamtwert am Markt erreicht wie der Vergleichs-Coin, 
+      zeigt das Ergebnis, welchen Preis ein einzelner Coin dann rechnerisch hätte.<br><br>
+      Diese Methode dient dazu, das <strong>potenzielle Aufwärtspotenzial</strong> eines Projekts 
+      abzuschätzen – insbesondere bei Coins mit <strong>ähnlicher Funktionalität oder Marktrolle</strong> 
+      (z. B. Layer-1-Blockchains, DeFi-Protokolle, Infrastrukturprojekte usw.).<br><br>
+      ⚠️ <em>Dies ist keine Kursprognose oder Anlageempfehlung, sondern ein hypothetisches Vergleichsszenario.</em>
+    </div>
+    
     <div class="grid">
       <div class="card" id="manualCard">
         <h2 id="h2Manual">Manuelle Eingabe</h2>
@@ -425,7 +437,19 @@
       de: {
         title: 'ATH Rechner',
         subtitle: 'Berechne den theoretischen Preis eines Coins – manuell oder automatisch mit Daten von CoinGecko.',
-        info: '💡 <strong>Hinweis:</strong> Wähle als Vergleichs-Coin ein Projekt mit ähnlicher Funktionalität und solider Marktposition, um realistische Vergleichswerte zu erhalten.',
+        info: `
+          💡 <strong>Hinweis:</strong><br><br>
+          Bei dieser Berechnung wird angenommen, dass der Ziel-Coin (z. B. Solana) irgendwann die gleiche 
+          <strong>Marktkapitalisierung</strong> wie der Vergleichs-Coin (z. B. Ethereum) erreicht.<br><br>
+          Der theoretische Preis ergibt sich aus folgender Formel:<br>
+          <code>Preis = (Market Cap des Vergleichs-Coins) ÷ (Max Supply des Ziel-Coins)</code><br><br>
+          Das bedeutet: Wenn das Projekt den gleichen Gesamtwert am Markt erreicht wie der Vergleichs-Coin, 
+          zeigt das Ergebnis, welchen Preis ein einzelner Coin dann rechnerisch hätte.<br><br>
+          Diese Methode dient dazu, das <strong>potenzielle Aufwärtspotenzial</strong> eines Projekts 
+          abzuschätzen – insbesondere bei Coins mit <strong>ähnlicher Funktionalität oder Marktrolle</strong> 
+          (z. B. Layer-1-Blockchains, DeFi-Protokolle, Infrastrukturprojekte usw.).<br><br>
+          ⚠️ <em>Dies ist keine Kursprognose oder Anlageempfehlung, sondern ein hypothetisches Vergleichsszenario.</em>
+          `,
         manual: 'Manuelle Eingabe', auto: 'Automatische Abfrage',
         marketCap: 'Market Cap des Vergleichs-Coins (USD)', maxSupply: 'Max Supply des Ziel-Coins (Einheiten)',
         baseCoin: 'Vergleichs-Coin (z.B. ETH/Ethereum)', targetCoin: 'Ziel-Coin (z.B. SOL/Solana)',
@@ -438,7 +462,19 @@
       en: {
         title: 'ATH Calculator',
         subtitle: 'Calculate the theoretical price of a coin – manually or automatically using data from CoinGecko.',
-        info: '💡 <strong>Note:</strong> Choose a comparison coin with similar functionality and a solid market position for realistic results.',
+         info: `
+            💡 <strong>Note:</strong><br><br>
+            This calculation assumes that the target coin (e.g. Solana) will one day reach the same 
+            <strong>market capitalization</strong> as the comparison coin (e.g. Ethereum).<br><br>
+            The theoretical price is calculated using:<br>
+            <code>Price = (Market Cap of Base Coin) ÷ (Max Supply of Target Coin)</code><br><br>
+            This means: If the target project reaches the same total market value as the base coin, 
+            the result shows what each token would be worth mathematically.<br><br>
+            This method helps estimate the <strong>potential upside</strong> of a project – especially when 
+            comparing coins with a <strong>similar function or market position</strong> 
+            (e.g. Layer-1 blockchains, DeFi protocols, or infrastructure projects).<br><br>
+            ⚠️ <em>This is not a price prediction or financial advice, but a hypothetical comparison scenario.</em>
+            `,
         manual: 'Manual Input', auto: 'Automatic Query',
         marketCap: 'Market Cap of Base Coin (USD)', maxSupply: 'Max Supply of Target Coin (units)',
         baseCoin: 'Base Coin (e.g. ETH/Ethereum)', targetCoin: 'Target Coin (e.g. SOL/Solana)',
