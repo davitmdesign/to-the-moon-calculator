@@ -154,6 +154,7 @@
       <div id="calcPath" class="calc-box">—</div>
       <div id="analysis" class="analysis-box">—</div>
       <div id="fairvalue" class="fairvalue-box">—</div>
+      <div id="extendedAnalysis" class="analysis-box">—</div>
       <p id="footerText" style="color: var(--muted); margin-top: 10px;">Nur rechnerische Abschätzung – keine Finanzberatung.</p>
     </div>
   </div>
@@ -211,6 +212,33 @@
       $('#analysis').innerHTML = `<strong>Analyse:</strong><br>Aktueller Preis: ${formatUSD(currentPrice)} ${t}<br>` +
         `Theoretischer Zielpreis: ${formatUSD(price)} ${t}<br>` +
         `${emoji} Veränderung: ${diff.toFixed(2)} %`;
+    }
+    async function showExtendedAnalysis(baseData, targetData) {
+      if (!baseData || !targetData) return;
+    
+      const baseRank = baseData.market_cap_rank;
+      const targetRank = targetData.market_cap_rank;
+      const baseCap = baseData.market_data?.market_cap?.usd;
+      const targetCap = targetData.market_data?.market_cap?.usd;
+      const btcPrice = targetData.market_data?.current_price?.btc;
+      const ethPrice = targetData.market_data?.current_price?.eth;
+    
+      // Verhältnis & Differenz
+      const ratio = baseCap && targetCap ? (targetCap / baseCap) * 100 : null;
+      const diff = baseCap && targetCap ? baseCap - targetCap : null;
+    
+      // Ausgabe
+      $('#extendedAnalysis').innerHTML = `
+        <strong>📊 Erweiterte Analyse</strong><br><br>
+        <table style="margin: 0 auto; text-align:left;">
+          <tr><td>🏅 Ranking (Vergleich)</td><td>${baseRank ? '#' + baseRank : '—'}</td></tr>
+          <tr><td>🏅 Ranking (Ziel)</td><td>${targetRank ? '#' + targetRank : '—'}</td></tr>
+          <tr><td>💰 Market Cap Verhältnis</td><td>${ratio ? ratio.toFixed(2) + '%' : '—'}</td></tr>
+          <tr><td>⚖️ Differenz zur Parität</td><td>${diff ? formatUSD(diff) : '—'}</td></tr>
+          <tr><td>🪙 Preis in BTC</td><td>${btcPrice ? btcPrice.toFixed(8) + ' BTC' : '—'}</td></tr>
+          <tr><td>🪙 Preis in ETH</td><td>${ethPrice ? ethPrice.toFixed(8) + ' ETH' : '—'}</td></tr>
+        </table>
+      `;
     }
     function showCoinInfo(data, name) {
       const img = data.image?.small || '';
@@ -400,6 +428,7 @@
         showFairValue(price, targetData.symbol);
         showAnalysis(price, currentPrice, targetData.symbol);
         showCoinInfo(targetData, targetData.name || target);
+        showExtendedAnalysis(baseData, targetData);
       } catch (err) {
         $('#price').textContent = (currentLang === 'de' ? 'Fehler: ' : 'Error: ') + err.message;
         ['#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
