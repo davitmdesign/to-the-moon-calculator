@@ -88,7 +88,14 @@
       color: #111;
       border-color: rgba(0,0,0,0.2);
     }
-
+    #resultCard {
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    #resultCard.visible {
+      display: block;
+      opacity: 1;
+    }
     @media (max-width: 600px) { body { padding: 16px; } .wrapper { padding: 0 12px; } .card { padding: 16px; } }
   </style>
 </head>
@@ -151,7 +158,7 @@
       ⚠️ <em>Dies ist keine Kursprognose oder Anlageempfehlung, sondern ein hypothetisches Vergleichsszenario.</em>
     </div>
 
-    <div class="card card-lower" style="margin-top:24px; text-align:center;">
+    <div id="resultCard" class="card card-lower" style="margin-top:24px; text-align:center;display:none;">
     <div id="trendContainer" style="margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center;margin-bottom:6px;">
         <strong id="trendTitle">📉 30-Tage-Trend</strong>
@@ -195,6 +202,18 @@
       document.body.style.color = light ? '#111' : '#e9eefc';
       $('#themeToggle').textContent = light ? '🌚' : '🌙';
     });
+
+    function showResultCard() {
+      const card = document.getElementById("resultCard");
+      card.style.display = "block";
+      setTimeout(() => card.classList.add("visible"), 50);
+    }
+    
+    function hideResultCard() {
+      const card = document.getElementById("resultCard");
+      card.classList.remove("visible");
+      setTimeout(() => (card.style.display = "none"), 300);
+    }
 
     function parseHumanNumber(str) {
       // Erlaubt: 510B, 12.5M, 1000000 usw.
@@ -493,6 +512,7 @@
       $('#price').textContent = `${formatUSD(price)} ${currentLang === 'de' ? 'pro Coin' : 'per coin'}`;
       updateCalcPath(mc, ms, price);
       showFairValue(price);
+      showResultCard();
       $('#analysis').textContent = '—';
       $('#coinInfo').textContent = '—';
     }
@@ -521,6 +541,7 @@
         showCoinInfo(targetData, targetData.name || target);
         showExtendedAnalysis(baseData, targetData);
         showPriceTrend(target, document.getElementById("trendDays").value);
+        showResultCard();
       } catch (err) {
         $('#price').textContent = (currentLang === 'de' ? 'Fehler: ' : 'Error: ') + err.message;
         ['#calcPath', '#analysis', '#fairvalue', '#coinInfo'].forEach(id => $(id).textContent = '—');
@@ -537,11 +558,13 @@
       ['#mc', '#ms', '#base', '#target'].forEach(id => { const el = $(id); el.value = ''; el.dataset.selectedId = ''; });
       ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue', '#coinInfo', '#baseErr', '#targetErr'].forEach(id => $(id).textContent = '—');
       ['#baseSuggest', '#targetSuggest'].forEach(id => { const el = $(id); el.classList.remove('open'); el.innerHTML=''; });
+      hideResultCard();
     });
     $('#clearAuto').addEventListener('click', () => {
       ['#base', '#target'].forEach(id => { const el = $(id); el.value = ''; el.dataset.selectedId = ''; });
       ['#price', '#kpiMc', '#kpiMs', '#calcPath', '#analysis', '#fairvalue', '#coinInfo', '#baseErr', '#targetErr'].forEach(id => $(id).textContent = '—');
       ['#baseSuggest', '#targetSuggest'].forEach(id => { const el = $(id); el.classList.remove('open'); el.innerHTML=''; });
+      hideResultCard();
     });
 
     // Suggestion-Handlers an Inputs hängen
